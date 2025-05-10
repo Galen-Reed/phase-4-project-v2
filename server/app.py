@@ -91,8 +91,8 @@ class DeviceList(Resource):
         try:
             new_device = Device(
                 name=data.get('name'),
-                device_type=get('device'),
-                serial_number=get('serial_number')
+                device_type=data.get('device'),
+                serial_number=data.get('serial_number')
             )
 
             db.session.add(new_device)
@@ -110,12 +110,77 @@ class DeviceList(Resource):
             db.session.rollback()
             print("Unexpected error:", str(e))
             return {'error': 'Internal Server Error: ' + str(e)}, 500
+        
+class AddTicket(Resource):
+    def post(self):
+        user_id = session.get("user_id")
+        user = User.query.get(user_id)
+
+        if not user:
+            return {"error": "Unauthorized"}, 401
+
+        data = request.get_json()
+
+        try:
+            new_ticket = Ticket(
+                title=data.get("title"),
+                description=data.get("description"),
+                status=data.get("status", "open"),
+                user_id=user.id,
+                device_id=data.get("device_id")
+            )
+
+            db.session.add(new_ticket)
+            db.session.commit()
+
+            return make_response(new_ticket.to_dict(), 201)
+
+        except Exception as e:
+            db.session.rollback()
+            return {"error": str(e)}, 422
+        
+class TicketById(Resource):
+    def patch(self, id):
+        user_id = session.get("user_id")
+        ticket = Ticket.query.get(id)
+
+        if not ticket:
+            return {"error": "Ticket not found"}, 404
+
+        if ticket.user_id != user_id:
+            return {"error": "Forbidden"}, 403
+
+        data = request.get_json()
+        for field in ["title", "description", "status"]:
+            if field in data:
+                setattr(ticket, field, data[field])
+
+        db.session.commit()
+        return make_response(ticket.to_dict(), 200)
+    
+    def delete(self, id):
+        user_id = session.get("user_id")
+        ticket = Ticket.query.get(id)
+
+        if not ticket:
+            return {"error": "Ticket not found"}, 404
+
+        if ticket.user_id != user_id:
+            return {"error": "Forbidden"}, 403
+
+        db.session.delete(ticket)
+        db.session.commit()
+        return {"message": "Ticket deleted"}, 204
+
 
 api.add_resource(Signup, '/signup', endpoint='signup')
 api.add_resource(CheckSession, '/check_session', endpoint='check_session')
 api.add_resource(Login, '/login', endpoint='login')
 api.add_resource(Logout, '/logout', endpoint='logout')
-api.add_resource(DeviceList, '/recipes', endpoint='recipes')
+api.add_resource(DeviceList, '/devices', endpoint='devices')
+api.add_resource(AddTicket, '/tickets', endpoint='tickets')
+api.add_resource(TicketById, '/tickets/<int:id>', endpoint='ticket_by_id')
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
