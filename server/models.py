@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import validates
 
@@ -14,7 +15,6 @@ class User(db.Model):
     _password_hash = db.Column(db.String(255), nullable=False)
 
     #Relationships
-    devices = db.relationship('Device', backref='owner', lazy=True, cascade="all, delete-orphan")
     tickets = db.relationship('Ticket', backref='user', cascade='all, delete-orphan')
 
 
@@ -29,11 +29,17 @@ class User(db.Model):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password)
     
+    @validates("username")
+    def validates_username(self, key, username):
+        if not username or len(username.strip()) < 3:
+            raise ValueError("Username must be at least 3 characters.")
+        return username.strip()
+
+    
     def to_dict(self):
         return {
             "id": self.id,
             "username": self.username,
-            "devices": [device.to_dict() for device in self.devices],
             "tickets": [ticket.to_dict() for ticket in self.tickets]
         }
 
@@ -49,9 +55,25 @@ class Device(db.Model):
     device_type = db.Column(db.String(50), nullable=False)
     serial_number = db.Column(db.String(50), unique=True, nullable=False)
 
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     tickets = db.relationship('Ticket', backref='device', lazy=True, cascade="all, delete-orphan")
+
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name.strip():
+            raise ValueError("Device name cannot be empty.")
+        return name.strip()
+    
+    @validates("device_type")
+    def validates_device_type(self, key, dtype):
+        if not dtype.strip():
+            raise ValueError("Device type cannoty be empty")
+        raise dtype.strip()
+    
+    @validates("serial_number")
+    def validate_serial(self, key, sn):
+        if not sn.strip():
+            raise ValueError("Serial number cannot be empty")
+        return sn.strip()
 
     def to_dict(self):
         return {
@@ -59,7 +81,6 @@ class Device(db.Model):
             "name": self.name,
             "device_type": self.device_type,
             "serial_number": self.serial_number,
-            "user_id": self.user_id,
             "tickets": [ticket.to_dict() for ticket in self.tickets]
         }
 
@@ -75,9 +96,30 @@ class Ticket(db.Model):
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='open')
 
+    created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
+
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     device_id = db.Column(db.Integer, db.ForeignKey('devices.id'), nullable=False)
+
+    @validates("title")
+    def validate_title(self, key, title):
+        if not title.strip():
+            raise ValueError("Title cannot be empty")
+        return title.strip()
+    
+    @validates("description")
+    def validate_description(self, key, desc):
+        if not desc.strip() or len(desc) < 10:
+            raise ValueError("Description must be at least 10 characters.")
+        return desc.strip()
+    
+    @validates("status")
+    def validate_status(self, key, status):
+        allowed = {'open', 'closed', 'in progress'}
+        if status.lower() not in allowed:
+            raise ValueError(f"Status must be one of {allowed}.")
+        return status.lower()
 
     def to_dict(self):
         return {
