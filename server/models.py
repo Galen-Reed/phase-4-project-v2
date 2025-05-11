@@ -67,7 +67,7 @@ class Device(db.Model):
     def validates_device_type(self, key, dtype):
         if not dtype.strip():
             raise ValueError("Device type cannoty be empty")
-        raise dtype.strip()
+        return dtype.strip()
     
     @validates("serial_number")
     def validate_serial(self, key, sn):

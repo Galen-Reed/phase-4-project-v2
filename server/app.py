@@ -171,6 +171,20 @@ class TicketById(Resource):
         db.session.delete(ticket)
         db.session.commit()
         return {"message": "Ticket deleted"}, 204
+    
+class MyTickets(Resource):
+    def get(self):
+        user_id = session.get("user_id")
+        if not user_id:
+            return {"error": "Unauthorized"}, 401
+
+        user = User.query.get(user_id)
+        if not user:
+            return {"error": "User not found"}, 404
+
+        tickets = [ticket.to_dict() for ticket in user.tickets]
+        return make_response(tickets, 200)
+
 
 
 api.add_resource(Signup, '/signup', endpoint='signup')
@@ -180,6 +194,8 @@ api.add_resource(Logout, '/logout', endpoint='logout')
 api.add_resource(DeviceList, '/devices', endpoint='devices')
 api.add_resource(AddTicket, '/tickets', endpoint='tickets')
 api.add_resource(TicketById, '/tickets/<int:id>', endpoint='ticket_by_id')
+api.add_resource(MyTickets, '/my_tickets', endpoint='my_tickets')
+
 
 
 if __name__ == '__main__':
