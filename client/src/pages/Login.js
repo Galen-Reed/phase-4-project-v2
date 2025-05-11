@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import LoginForm from "../components/LoginForm";
 import SignUpForm from "../components/SignUpForm";
 import { Divider, Button, Box, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function Login({ onLogin }) {
   const [showLogin, setShowLogin] = useState(true);
+  const navigate = useNavigate();
+
+  const handleLogin = (user) => {
+    onLogin(user);
+    navigate("/tickets");
+  }
 
   return (
     <Box
@@ -25,7 +32,7 @@ function Login({ onLogin }) {
 
       {showLogin ? (
         <>
-          <LoginForm onLogin={onLogin} />
+          <LoginForm onLogin={handleLogin} />
           <Divider sx={{ my: 2 }} />
           <p>
             Don't have an account? &nbsp;
@@ -36,7 +43,7 @@ function Login({ onLogin }) {
         </>
       ) : (
         <>
-          <SignUpForm onLogin={onLogin} />
+          <SignUpForm onLogin={handleLogin} />
           <Divider sx={{ my: 2 }} />
           <p>
             Already have an account? &nbsp;

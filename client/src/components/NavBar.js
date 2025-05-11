@@ -12,11 +12,6 @@ function Navbar({ user, setUser }) {
         });
     }
 
-
-
-
-
-
     return (
         <AppBar position="static" color="primary">
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -31,8 +26,7 @@ function Navbar({ user, setUser }) {
                     </Typography>
                 </Box>
                 <Box>
-                    <Button color="inherit" component={Link} to="/">Home</Button>
-                    <Button color="inherit" component={Link} to="/tickets">Tickets</Button>
+                    <Button color="inherit" component={Link} to="/tickets">My Tickets</Button>
                     <Button color="inherit" component={Link} to="/devices">Devices</Button>
                     <Button color="inhherit" onClick={handleLogoutClick}>Logout</Button>
                 </Box>
