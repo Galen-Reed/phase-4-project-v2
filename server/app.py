@@ -91,7 +91,7 @@ class DeviceList(Resource):
         try:
             new_device = Device(
                 name=data.get('name'),
-                device_type=data.get('device'),
+                type=data.get('type'),
                 serial_number=data.get('serial_number')
             )
 

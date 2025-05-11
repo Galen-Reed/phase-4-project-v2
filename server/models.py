@@ -52,7 +52,7 @@ class Device(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    device_type = db.Column(db.String(50), nullable=False)
+    type = db.Column(db.String(50), nullable=False)
     serial_number = db.Column(db.String(50), unique=True, nullable=False)
 
     tickets = db.relationship('Ticket', backref='device', lazy=True, cascade="all, delete-orphan")
@@ -63,8 +63,8 @@ class Device(db.Model):
             raise ValueError("Device name cannot be empty.")
         return name.strip()
     
-    @validates("device_type")
-    def validates_device_type(self, key, dtype):
+    @validates("type")
+    def validates_type(self, key, dtype):
         if not dtype.strip():
             raise ValueError("Device type cannoty be empty")
         return dtype.strip()
@@ -79,7 +79,7 @@ class Device(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "device_type": self.device_type,
+            "type": self.type,
             "serial_number": self.serial_number,
             "tickets": [ticket.to_dict() for ticket in self.tickets]
         }

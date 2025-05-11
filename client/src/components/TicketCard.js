@@ -23,7 +23,6 @@ function TicketCard({ ticket }) {
         <Typography>{ticket.description}</Typography>
         <Typography>Ticket ID: {ticket.id}</Typography>
         <Typography>Status: {ticket.status}</Typography>
-        <Typography>Device: {ticket.device.id}</Typography>
         <Typography>Ticket created: {ticket.created_at}</Typography>
       </CardContent>
     </Card>
