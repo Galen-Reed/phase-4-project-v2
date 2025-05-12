@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Typography } from "@mui/material";
 import TicketCard from "../components/TicketCard";
 import TicketForm from "../components/TicketForm";
 
-function UserTickets({ tickets, devices }) {
-
-    const [userTickets, setUserTickets] = useState(tickets);
+function UserTickets({ tickets, setTickets, devices }) {
 
     function onSubmit(ticketData) {
         fetch("/tickets", {
@@ -17,7 +15,7 @@ function UserTickets({ tickets, devices }) {
         })
         .then((response) => response.json())
         .then((newTicket) => {
-            setUserTickets([...userTickets, newTicket]);
+            setTickets([...tickets, newTicket]);
         })
         .catch((error) => {
             console.error("Error creating ticket:", error);
@@ -41,9 +39,6 @@ function UserTickets({ tickets, devices }) {
         ))
       )}
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          Create a New Ticket
-        </Typography>
         <TicketForm onSubmit={onSubmit} devices={devices}/>
       </Box>
     </Box>

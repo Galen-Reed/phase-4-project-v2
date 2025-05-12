@@ -1,4 +1,4 @@
-import React, { useEffect, useInsertionEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";
 import DeviceList from "../pages/DeviceList";
@@ -31,14 +31,19 @@ function App() {
     .then((data) => setDevices(data));
   }, []);
 
-  if (!user) return <Login onLogin={setUser} />
+  function handleLogin(userData) {
+    setUser(userData);
+    setTickets(userData.tickets || []);
+  }
+
+  if (!user) return <Login onLogin={handleLogin} />
 
   return (
     <>
-      <NavBar user={user} setUser={setUser} />
+      <NavBar user={user} setUser={setUser} setTickets={setTickets} />
       <Routes>
         <Route path="/devices" element={<DeviceList devices={devices} setDevices={setDevices}/>} />
-        <Route path="/tickets" element={<UserTickets tickets={tickets} devices={devices}/>} />
+        <Route path="/tickets" element={<UserTickets tickets={tickets} setTickets={setTickets} devices={devices}/>} />
       </Routes>
     </>
   );

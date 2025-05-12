@@ -2,12 +2,13 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 
-function Navbar({ user, setUser }) {
+function Navbar({ user, setUser, setTickets }) {
 
     function handleLogoutClick() {
         fetch("/logout", { method: "DELETE"}).then((r) => {
             if (r.ok) {
                 setUser(null);
+                setTickets([]);
             }
         });
     }
