@@ -1,9 +1,7 @@
 import React from "react";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
+import { Card, CardContent, Typography, Button, Stack } from "@mui/material";
 
-function TicketCard({ ticket }) {
+function TicketCard({ ticket, handleEdit }) {
 
   return (
     <Card className="ticket-card" sx={{
@@ -24,6 +22,12 @@ function TicketCard({ ticket }) {
         <Typography>Ticket ID: {ticket.id}</Typography>
         <Typography>Status: {ticket.status}</Typography>
         <Typography>Ticket created: {ticket.created_at}</Typography>
+        <Button onClick={() => handleEdit(ticket)} sx={{ mt : 2 }} variant="outlined">
+          Edit
+        </Button>
+        <Button onClick={() => handleDelete(ticket)} sx={{ mt : 2 }} variant="outlined">
+          Delete
+        </Button>
       </CardContent>
     </Card>
   );

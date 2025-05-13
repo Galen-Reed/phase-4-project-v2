@@ -43,7 +43,7 @@ function App() {
       <NavBar user={user} setUser={setUser} setTickets={setTickets} />
       <Routes>
         <Route path="/devices" element={<DeviceList devices={devices} setDevices={setDevices}/>} />
-        <Route path="/tickets" element={<UserTickets tickets={tickets} setTickets={setTickets} devices={devices}/>} />
+        <Route path="/tickets" element={<UserTickets user={user} tickets={tickets} setTickets={setTickets} devices={devices}/>} />
       </Routes>
     </>
   );

@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import TicketCard from "../components/TicketCard";
 import TicketForm from "../components/TicketForm";
 
-function UserTickets({ tickets, setTickets, devices }) {
+function UserTickets({ user, tickets, setTickets, devices }) {
+
+    const [ticketToEdit, setTicketToEdit] = useState(null);
 
     function onSubmit(ticketData) {
         fetch("/tickets", {
@@ -22,11 +24,52 @@ function UserTickets({ tickets, setTickets, devices }) {
         });
     };
 
+    function handleEdit(ticket) {
+      setTicketToEdit(ticket);
+    }
+
+    function handleDelete(ticketId) {
+      fetch(`/tickets/${ticketId}`, {
+        method: "DELETE",
+      })
+      .then((response) => {
+        if (response.ok) {
+          const updated = tickets.filter((t) => t.id !== ticketId);
+          setTickets(updated);
+        } else {
+          console.error("Failed to delete ticket");
+        }
+      });
+    }
+
+    function handleSubmit(ticketData) {
+      const method = ticketToEdit ? "PATCH" : "POST";
+      const url = ticketToEdit ? `/tickets/${ticketToEdit.id}` : "/tickets";
+
+      fetch(url, {
+        method,
+        headers: {'Content-Type': "application/json" },
+        body: JSON.stringify(ticketData),
+      })
+      .then((r) => r.json())
+      .then((savedTicket) => {
+        if(ticketToEdit) {
+          const updated = tickets.map((t) => (t.id === savedTicket.id ? savedTicket : t));
+          setTickets(updated);
+          setTicketToEdit(null);
+        } else {
+          setTickets([...tickets, savedTickets]);
+        }
+      });
+    }
+
+    console.log(tickets);
+
 
   return (
     <Box sx={{ padding: 2 }}>
       <Typography variant="h5" gutterBottom>
-        Your Tickets
+        {user.username}'s Tickets
       </Typography>
 
       {tickets.length === 0 ? (
