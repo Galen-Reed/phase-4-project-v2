@@ -7,22 +7,22 @@ function UserTickets({ user, tickets, setTickets, devices }) {
 
     const [ticketToEdit, setTicketToEdit] = useState(null);
 
-    function onSubmit(ticketData) {
-        fetch("/tickets", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(ticketData),
-        })
-        .then((response) => response.json())
-        .then((newTicket) => {
-            setTickets([...tickets, newTicket]);
-        })
-        .catch((error) => {
-            console.error("Error creating ticket:", error);
-        });
-    };
+    // function handleSubmit(ticketData) {
+    //     fetch("/tickets", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify(ticketData),
+    //     })
+    //     .then((response) => response.json())
+    //     .then((newTicket) => {
+    //         setTickets([...tickets, newTicket]);
+    //     })
+    //     .catch((error) => {
+    //         console.error("Error creating ticket:", error);
+    //     });
+    // };
 
     function handleEdit(ticket) {
       setTicketToEdit(ticket);
@@ -58,7 +58,7 @@ function UserTickets({ user, tickets, setTickets, devices }) {
           setTickets(updated);
           setTicketToEdit(null);
         } else {
-          setTickets([...tickets, savedTickets]);
+          setTickets([...tickets, savedTicket]);
         }
       });
     }
@@ -78,11 +78,11 @@ function UserTickets({ user, tickets, setTickets, devices }) {
         </Typography>
       ) : (
         tickets.map((ticket) => (
-          <TicketCard key={ticket.id} ticket={ticket} />
+          <TicketCard key={ticket.id} ticket={ticket} handleEdit={handleEdit} handleDelete={handleDelete}/>
         ))
       )}
       <Box sx={{ mt: 4 }}>
-        <TicketForm onSubmit={onSubmit} devices={devices}/>
+        <TicketForm onSubmit={handleSubmit} devices={devices} initialData={ticketToEdit}/>
       </Box>
     </Box>
   );

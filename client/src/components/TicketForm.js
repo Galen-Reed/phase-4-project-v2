@@ -18,14 +18,18 @@ const validationSchema = Yup.object({
         .required('Device is required')
 });
 
-const TicketForm = ({ onSubmit, devices }) => {
+const TicketForm = ({ onSubmit, devices, initialData }) => {
+
+    const isEditing = !!initialData;
+
     return (
         <Formik
+            enableReinitialize
             initialValues={{
-                title: '',
-                description: '',
-                status: 'open',
-                device_id: '',
+                title: initialData?.title || '',
+                description: initialData?.description || '',
+                status: initialData?.status || 'open',
+                device_id: initialData?.device_id || '',
             }}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
@@ -34,7 +38,7 @@ const TicketForm = ({ onSubmit, devices }) => {
                 <Form>
                     <Box
                         sx={{
-                            maxWidth: 600,
+                            maxWidth: 800,
                             mx: 'auto',
                             mt: 4,
                             p: 3,
@@ -44,7 +48,7 @@ const TicketForm = ({ onSubmit, devices }) => {
                         }}
                     >
                         <Typography variant="h4" component="h1" gutterBottom>
-                            Create New Ticket
+                            {isEditing ? 'Edit Ticket' : 'Create New Ticket'}
                         </Typography>
 
                         <Grid container spacing={2}>
@@ -91,12 +95,18 @@ const TicketForm = ({ onSubmit, devices }) => {
                                     value={values.device_id}
                                     error={touched.device_id && Boolean(errors.device_id)}
                                     helperText={touched.device_id && errors.device_id}
+                                    InputLabelProps={{ shrink: true }}
+                                    SelectProps={{ displayEmpty: true }}
+                                    sx={{ width: '100%' }}
                                 >
-                                    {devices.map((device) => (
-                                        <MenuItem key={device.id} value={device.id}>
-                                            {device.name}
-                                        </MenuItem>
-                                    ))}
+                                <MenuItem value="" disabled>
+                                    Select a device
+                                </MenuItem>
+                                {devices.map((device) => (
+                                    <MenuItem key={device.id} value={device.id}>
+                                        {device.name}
+                                    </MenuItem>
+                                ))}
                                 </Field>
                             </Grid>
                             <Grid item xs={12}>
@@ -122,7 +132,7 @@ const TicketForm = ({ onSubmit, devices }) => {
 
                         <Box mt={3}>
                             <Button type="submit" variant="contained" color="primary" fullWidth>
-                                Submit Ticket
+                                {isEditing ? 'Update Ticket' : 'Submit Ticket'}
                             </Button>
                         </Box>
                     </Box>

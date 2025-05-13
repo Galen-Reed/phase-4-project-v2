@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, CardContent, Typography, Button, Stack } from "@mui/material";
+import { Card, CardContent, Typography, Button, Box } from "@mui/material";
 
-function TicketCard({ ticket, handleEdit }) {
+function TicketCard({ ticket, handleEdit, handleDelete }) {
 
   return (
     <Card className="ticket-card" sx={{
@@ -21,13 +21,22 @@ function TicketCard({ ticket, handleEdit }) {
         <Typography>{ticket.description}</Typography>
         <Typography>Ticket ID: {ticket.id}</Typography>
         <Typography>Status: {ticket.status}</Typography>
-        <Typography>Ticket created: {ticket.created_at}</Typography>
-        <Button onClick={() => handleEdit(ticket)} sx={{ mt : 2 }} variant="outlined">
-          Edit
-        </Button>
-        <Button onClick={() => handleDelete(ticket)} sx={{ mt : 2 }} variant="outlined">
-          Delete
-        </Button>
+        <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            sx={{ backgroundColor: "#fff", color: "#000", '&:hover': { backgroundColor: "#f0f0f0" } }}
+            onClick={() => handleEdit(ticket)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ backgroundColor: "#fff", color: '#f44336', '&:hover': { backgroundColor: "#f0f0f0" } }}
+            onClick={() => handleDelete(ticket.id)}
+          >
+            Delete
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );

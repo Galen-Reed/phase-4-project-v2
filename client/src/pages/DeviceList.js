@@ -4,6 +4,7 @@ import { List, ListItem, ListItemText, Typography, Paper, ListItemIcon } from "@
 import ComputerIcon from '@mui/icons-material/Computer';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import TabletIcon from '@mui/icons-material/Tablet';
+import PrintIcon from '@mui/icons-material/Print'
 
 function DeviceList({ devices, setDevices }) {
 
@@ -14,9 +15,12 @@ function DeviceList({ devices, setDevices }) {
             case 'computer':
                 return <ComputerIcon sx={{ marginRight: 1 }}/>
             case 'phone':
+            case 'cellphone':
                 return <PhoneIphoneIcon sx={{ marginRight: 1 }}/>
             case 'tablet':
                 return <TabletIcon sx={{ marginRight: 1 }}/>
+            case 'printer':
+                return <PrintIcon sx={{ marginRight: 1 }} />
             default:
                 return null;
         }
