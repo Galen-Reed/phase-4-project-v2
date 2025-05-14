@@ -16,7 +16,7 @@ class User(db.Model):
 
     #Relationships
     tickets = db.relationship('Ticket', backref='user', cascade='all, delete-orphan')
-
+    devices = db.relationship('Device', secondary="tickets", primaryjoin="User.id == Ticket.user_id", secondaryjoin="Device.id == Ticket.device_id", viewonly=True, backref="users")
 
     @property
     def password_hash(self):
@@ -37,10 +37,29 @@ class User(db.Model):
 
     
     def to_dict(self):
+
         return {
             "id": self.id,
             "username": self.username,
-            "tickets": [ticket.to_dict() for ticket in self.tickets]
+            "devices": [
+                {
+                    "id": device.id,
+                    "name": device.name,
+                    "type": device.type,
+                    "serial_number": device.serial_number,
+                    "tickets": [
+                        {
+                            "id": ticket.id,
+                            "title": ticket.title,
+                            "description": ticket.description,
+                            "status": ticket.status,
+                            "created_at": ticket.created_at.isoformat() if ticket.created_at else None
+                        } 
+                        for ticket in device.tickets if ticket.user_id == self.id
+                    ]
+                } 
+                for device in self.devices
+            ]
         }
 
     def __repr__(self):
@@ -55,7 +74,15 @@ class Device(db.Model):
     type = db.Column(db.String(50), nullable=False)
     serial_number = db.Column(db.String(50), unique=True, nullable=False)
 
-    tickets = db.relationship('Ticket', backref='device', lazy=True, cascade="all, delete-orphan")
+    tickets = db.relationship('Ticket', backref='device', cascade="all, delete-orphan")
+
+    users = db.relationship(
+        'User',
+        secondary="tickets",
+        primaryjoin="Device.id == Ticket.device_id",
+        secondaryjoin="User.id == Ticket.user_id",
+        viewonly=True
+    )
 
     @validates('name')
     def validate_name(self, key, name):
@@ -76,12 +103,29 @@ class Device(db.Model):
         return sn.strip()
 
     def to_dict(self):
+
         return {
             "id": self.id,
             "name": self.name,
             "type": self.type,
             "serial_number": self.serial_number,
-            "tickets": [ticket.to_dict() for ticket in self.tickets]
+            "users": [
+                {
+                    "id": user.id,
+                    "username": user.username,
+                    "tickets": [
+                        {
+                            "id": ticket.id,
+                            "title": ticket.title,
+                            "description": ticket.description,
+                            "status": ticket.status,
+                            "created_at": ticket.created_at.isoformat() if ticket.created_at else None
+                        }
+                        for ticket in self.tickets if ticket.user_id == user.id
+                    ]
+                }
+                for user in self.users
+            ]
         }
 
     def __repr__(self):
@@ -95,9 +139,6 @@ class Ticket(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='open')
-
-    created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
-
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     device_id = db.Column(db.Integer, db.ForeignKey('devices.id'), nullable=False)
