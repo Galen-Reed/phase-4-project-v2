@@ -114,7 +114,7 @@ class DeviceList(Resource):
 class AddTicket(Resource):
     def post(self):
         user_id = session.get("user_id")
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return {"error": "Unauthorized"}, 401
@@ -142,7 +142,7 @@ class AddTicket(Resource):
 class TicketById(Resource):
     def patch(self, id):
         user_id = session.get("user_id")
-        ticket = Ticket.query.get(id)
+        ticket = db.session.get(Ticket, id)
 
         if not ticket:
             return {"error": "Ticket not found"}, 404
@@ -160,7 +160,7 @@ class TicketById(Resource):
     
     def delete(self, id):
         user_id = session.get("user_id")
-        ticket = Ticket.query.get(id)
+        ticket = db.session.get(Ticket, id)
 
         if not ticket:
             return {"error": "Ticket not found"}, 404

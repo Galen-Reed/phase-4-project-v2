@@ -16,7 +16,7 @@ class User(db.Model):
 
     #Relationships
     tickets = db.relationship('Ticket', backref='user', cascade='all, delete-orphan')
-    devices = db.relationship('Device', secondary="tickets", primaryjoin="User.id == Ticket.user_id", secondaryjoin="Device.id == Ticket.device_id", viewonly=True, backref="users")
+    devices = db.relationship('Device', secondary="tickets", primaryjoin="User.id == Ticket.user_id", secondaryjoin="Device.id == Ticket.device_id", viewonly=True)
 
     @property
     def password_hash(self):
@@ -52,8 +52,7 @@ class User(db.Model):
                             "id": ticket.id,
                             "title": ticket.title,
                             "description": ticket.description,
-                            "status": ticket.status,
-                            "created_at": ticket.created_at.isoformat() if ticket.created_at else None
+                            "status": ticket.status
                         } 
                         for ticket in device.tickets if ticket.user_id == self.id
                     ]
@@ -118,8 +117,7 @@ class Device(db.Model):
                             "id": ticket.id,
                             "title": ticket.title,
                             "description": ticket.description,
-                            "status": ticket.status,
-                            "created_at": ticket.created_at.isoformat() if ticket.created_at else None
+                            "status": ticket.status
                         }
                         for ticket in self.tickets if ticket.user_id == user.id
                     ]

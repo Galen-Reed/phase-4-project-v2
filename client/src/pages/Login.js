@@ -10,7 +10,7 @@ function Login({ onLogin }) {
 
   const handleLogin = (user) => {
     onLogin(user);
-    navigate("/tickets");
+    navigate("/my-devices");
   }
 
   return (

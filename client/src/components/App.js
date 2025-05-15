@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Login from "../pages/Login";
 import DeviceList from "../pages/DeviceList";
-import UserTickets from "../pages/UserDevices";
+import UserDevices from "../pages/UserDevices";
 import NavBar from "../components/NavBar";
 
 function App() {
@@ -10,6 +10,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [userDevices, setUserDevices] = useState([])
   const [allDevices, setAllDevices] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("/check_session", {
@@ -36,7 +38,7 @@ function App() {
     setUserDevices(userData.devices || []);
   }
 
-  console.log(tickets);
+  console.log(allDevices);
 
   if (!user) return <Login onLogin={handleLogin} />
 

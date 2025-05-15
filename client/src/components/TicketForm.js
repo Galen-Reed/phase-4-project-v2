@@ -1,145 +1,155 @@
-import React from 'react';
-import { Field, Form, Formik } from 'formik';
-import { Button, TextField, Typography, Box, Grid, MenuItem } from '@mui/material';
-import * as Yup from 'yup';
+import React, { useState } from "react";
+import { TextField, Button, MenuItem, Box, Grid } from "@mui/material";
 
-// Validation schema
-const validationSchema = Yup.object({
-    title: Yup.string()
-        .min(3, 'Title should be at least 3 characters long')
-        .required('Title is required'),
-    description: Yup.string()
-        .min(10, 'Description should be at least 10 characters long')
-        .required('Description is required'),
-    status: Yup.string()
-        .oneOf(['open', 'closed', 'in progress'], 'Invalid status')
-        .required('Status is required'),
-    device_id: Yup.number()
-        .required('Device is required')
-});
+function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId = null, onCancel }) {
+  const [formData, setFormData] = useState({
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    device_id: preselectedDeviceId || initialData?.device_id || "",
+    status: initialData?.status || "open",
+  });
 
-const TicketForm = ({ onSubmit, devices, initialData }) => {
+  const [errors, setErrors] = useState({});
 
-    const isEditing = !!initialData;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    
+    // Clear error when field is edited
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null,
+      });
+    }
+  };
 
-    return (
-        <Formik
-            enableReinitialize
-            initialValues={{
-                title: initialData?.title || '',
-                description: initialData?.description || '',
-                status: initialData?.status || 'open',
-                device_id: initialData?.device_id || '',
-            }}
-            validationSchema={validationSchema}
-            onSubmit={onSubmit}
-        >
-            {({ values, handleChange, handleBlur, touched, errors }) => (
-                <Form>
-                    <Box
-                        sx={{
-                            maxWidth: 800,
-                            mx: 'auto',
-                            mt: 4,
-                            p: 3,
-                            border: '1px solid #ccc',
-                            borderRadius: 2,
-                            backgroundColor: '#fff',
-                        }}
-                    >
-                        <Typography variant="h4" component="h1" gutterBottom>
-                            {isEditing ? 'Edit Ticket' : 'Create New Ticket'}
-                        </Typography>
+  const validate = () => {
+    const newErrors = {};
+    
+    if (!formData.title.trim()) {
+      newErrors.title = "Title is required";
+    }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required";
+    } else if (formData.description.length < 10) {
+      newErrors.description = "Description must be at least 10 characters";
+    }
+    
+    if (!formData.device_id) {
+      newErrors.device_id = "Please select a device";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <Field
-                                    name="title"
-                                    label="Title"
-                                    variant="outlined"
-                                    fullWidth
-                                    as={TextField}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    value={values.title}
-                                    error={touched.title && Boolean(errors.title)}
-                                    helperText={touched.title && errors.title}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Field
-                                    name="description"
-                                    label="Description"
-                                    variant="outlined"
-                                    fullWidth
-                                    multiline
-                                    rows={4}
-                                    as={TextField}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    value={values.description}
-                                    error={touched.description && Boolean(errors.description)}
-                                    helperText={touched.description && errors.description}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Field
-                                    name="device_id"
-                                    label="Device"
-                                    variant="outlined"
-                                    fullWidth
-                                    select
-                                    as={TextField}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    value={values.device_id}
-                                    error={touched.device_id && Boolean(errors.device_id)}
-                                    helperText={touched.device_id && errors.device_id}
-                                    InputLabelProps={{ shrink: true }}
-                                    SelectProps={{ displayEmpty: true }}
-                                    sx={{ width: '100%' }}
-                                >
-                                <MenuItem value="" disabled>
-                                    Select a device
-                                </MenuItem>
-                                {devices.map((device) => (
-                                    <MenuItem key={device.id} value={device.id}>
-                                        {device.name}
-                                    </MenuItem>
-                                ))}
-                                </Field>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Field
-                                    name="status"
-                                    label="Status"
-                                    variant="outlined"
-                                    fullWidth
-                                    select
-                                    as={TextField}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    value={values.status}
-                                    error={touched.status && Boolean(errors.status)}
-                                    helperText={touched.status && errors.status}
-                                >
-                                    <MenuItem value="open">Open</MenuItem>
-                                    <MenuItem value="in progress">In Progress</MenuItem>
-                                    <MenuItem value="closed">Closed</MenuItem>
-                                </Field>
-                            </Grid>
-                        </Grid>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (validate()) {
+      onSubmit(formData);
+      
+      // Only reset form if not editing
+      if (!initialData) {
+        setFormData({
+          title: "",
+          description: "",
+          device_id: preselectedDeviceId || "",
+          status: "open",
+        });
+      }
+    }
+  };
 
-                        <Box mt={3}>
-                            <Button type="submit" variant="contained" color="primary" fullWidth>
-                                {isEditing ? 'Update Ticket' : 'Submit Ticket'}
-                            </Button>
-                        </Box>
-                    </Box>
-                </Form>
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Ticket Title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            error={!!errors.title}
+            helperText={errors.title}
+            required
+          />
+        </Grid>
+        
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            error={!!errors.description}
+            helperText={errors.description || "Minimum 10 characters"}
+            required
+          />
+        </Grid>
+        
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            select
+            label="Device"
+            name="device_id"
+            value={formData.device_id}
+            onChange={handleChange}
+            error={!!errors.device_id}
+            helperText={errors.device_id}
+            disabled={preselectedDeviceId !== null}
+            required
+          >
+            {devices.map((device) => (
+              <MenuItem key={device.id} value={device.id}>
+                {device.name} ({device.type})
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        
+        {initialData && (
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              select
+              label="Status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+            >
+              <MenuItem value="open">Open</MenuItem>
+              <MenuItem value="in progress">In Progress</MenuItem>
+              <MenuItem value="closed">Closed</MenuItem>
+            </TextField>
+          </Grid>
+        )}
+        
+        <Grid item xs={12}>
+          <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+            {onCancel && (
+              <Button type="button" variant="outlined" onClick={onCancel}>
+                Cancel
+              </Button>
             )}
-        </Formik>
-    );
-};
+            <Button type="submit" variant="contained">
+              {initialData ? "Update Ticket" : "Create Ticket"}
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}
 
 export default TicketForm;

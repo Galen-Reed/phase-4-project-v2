@@ -61,7 +61,6 @@ function DeviceForm({ setDevices }) {
       </Typography>
 
       <form onSubmit={formik.handleSubmit}>
-        {/* Device Name */}
         <TextField
           fullWidth
           label="Device Name"
@@ -74,7 +73,6 @@ function DeviceForm({ setDevices }) {
           sx={{ mb: 2 }}
         />
 
-        {/* Device Type */}
         <TextField
           fullWidth
           label="Device Type"
@@ -87,7 +85,6 @@ function DeviceForm({ setDevices }) {
           sx={{ mb: 2 }}
         />
 
-        {/* Serial Number */}
         <TextField
           fullWidth
           label="Serial Number"
@@ -100,7 +97,6 @@ function DeviceForm({ setDevices }) {
           sx={{ mb: 2 }}
         />
 
-        {/* Submit Button */}
         <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
           Submit Device
         </Button>
