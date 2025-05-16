@@ -26,7 +26,7 @@ function DeviceForm({ setDevices }) {
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
-      console.log("Form values submitted: ", values);  // Added logging
+      console.log("Form values submitted: ", values); 
       fetch("/devices", {
         method: "POST",
         headers: {
@@ -35,7 +35,7 @@ function DeviceForm({ setDevices }) {
         body: JSON.stringify(values),
       })
         .then((response) => {
-          console.log("Response status: ", response.status);  // Log the response status
+          console.log("Response status: ", response.status);
           if (response.ok) {
             response.json().then((newDevice) => {
                 console.log("New Device:", newDevice); 
@@ -43,12 +43,10 @@ function DeviceForm({ setDevices }) {
                 formik.resetForm();
             });
           } else {
-            // Handle server-side errors or non-200 responses
             console.error("Failed to submit the form, response not ok");
           }
         })
         .catch((error) => {
-          // Log any network-related errors (e.g., fetch failure)
           console.error("Error occurred during the fetch:", error);
         });
     },
