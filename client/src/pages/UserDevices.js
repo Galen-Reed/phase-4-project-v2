@@ -16,26 +16,30 @@ function UserDevices({ user, userDevices, setUserDevices, allDevices }) {
   }
 
   function handleDelete(ticketId, deviceId) {
-    fetch(`/tickets/${ticketId}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (response.ok) {
-          const updatedDevices = userDevices.map(device => {
+  fetch(`/tickets/${ticketId}`, {
+    method: "DELETE",
+  })
+    .then((response) => {
+      if (response.ok) {
+        const updatedDevices = userDevices
+          .map(device => {
             if (device.id === deviceId) {
+              const filteredTickets = device.tickets.filter(t => t.id !== ticketId);
               return {
                 ...device,
-                tickets: device.tickets.filter(t => t.id !== ticketId)
+                tickets: filteredTickets
               };
             }
             return device;
-          });
-          setUserDevices(updatedDevices);
-        } else {
-          console.error("Failed to delete ticket");
-        }
-      });
-  }
+          })
+          .filter(device => device.tickets.length > 0); // 👈 removes devices with no tickets
+
+        setUserDevices(updatedDevices);
+      } else {
+        console.error("Failed to delete ticket");
+      }
+    });
+}
 
   function handleAddTicket(device) {
     setTicketToEdit(null);

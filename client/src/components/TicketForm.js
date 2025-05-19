@@ -45,6 +45,7 @@ function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                margin="normal"
                 label="Ticket Title"
                 name="title"
                 value={values.title}
@@ -59,6 +60,7 @@ function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                margin="normal"
                 label="Description"
                 name="description"
                 value={values.description}
@@ -75,6 +77,7 @@ function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                margin="normal"
                 select
                 label="Device"
                 name="device_id"
@@ -83,7 +86,7 @@ function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId
                 onBlur={handleBlur}
                 error={touched.device_id && !!errors.device_id}
                 helperText={touched.device_id && errors.device_id}
-                disabled={preselectedDeviceId !== null}
+                disabled={!!initialData || preselectedDeviceId !== null}
                 required
               >
                 {devices.map((device) => (
@@ -98,6 +101,7 @@ function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
+                  margin="normal"
                   select
                   label="Status"
                   name="status"
