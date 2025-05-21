@@ -45,7 +45,7 @@ function App() {
       <NavBar user={user} setUser={setUser} setUserDevices={setUserDevices} />
       <Routes>
         <Route path="/devices" element={<DeviceList devices={allDevices} setDevices={setAllDevices}/>} />
-        <Route path="/my-devices" element={<UserDevices user={user} userDevices={userDevices} setUserDevices={setUserDevices} allDevices={allDevices}/>} />
+        <Route path="/my-devices" element={<UserDevices user={user} userDevices={userDevices} setUserDevices={setUserDevices} allDevices={allDevices} setAllDevices={setAllDevices}/>} />
       </Routes>
     </>
   );

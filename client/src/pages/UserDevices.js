@@ -4,7 +4,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TicketCard from "../components/TicketCard";
 import TicketForm from "../components/TicketForm";
 
-function UserDevices({ user, userDevices, setUserDevices, allDevices }) {
+function UserDevices({ user, userDevices, setUserDevices, allDevices, setAllDevices }) {
   const [ticketToEdit, setTicketToEdit] = useState(null);
   const [selectedDeviceId, setSelectedDeviceId] = useState(null);
   const [showTicketForm, setShowTicketForm] = useState(false);

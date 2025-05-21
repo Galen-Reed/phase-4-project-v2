@@ -6,7 +6,7 @@ function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId
   const initialValues = {
     title: initialData?.title || "",
     description: initialData?.description || "",
-    device_id: preselectedDeviceId || initialData?.device_id || "",
+    device_id: initialData?.device_id || preselectedDeviceId || "",
     status: initialData?.status || "open",
   };
 
@@ -37,8 +37,10 @@ function TicketForm({ onSubmit, devices, initialData = null, preselectedDeviceId
     }
   };
 
+  console.log(initialData);
+
   return (
-    <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
+    <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit} enableReinitialize={true}>
       {({ values, errors, touched, handleChange, handleBlur }) => (
         <Form>
           <Grid container spacing={2}>
